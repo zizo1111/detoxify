@@ -46,13 +46,16 @@ def load_checkpoint(model_type="original", checkpoint=None, device="cpu", huggin
                     with as well as the state dict"
             )
     class_names = loaded["config"]["dataset"]["args"]["classes"]
+    identity_classes = []
+    if "identity_classes" in loaded["config"]["dataset"]["args"]:
+        identity_classes = loaded["config"]["dataset"]["args"]["identity_classes"]
     # standardise class names between models
     change_names = {
         "toxic": "toxicity",
         "identity_hate": "identity_attack",
         "severe_toxic": "severe_toxicity",
     }
-    class_names = [change_names.get(cl, cl) for cl in class_names]
+    class_names = [change_names.get(cl, cl) for cl in class_names + identity_classes]
     model, tokenizer = get_model_and_tokenizer(
         **loaded["config"]["arch"]["args"],
         state_dict=loaded["state_dict"],
